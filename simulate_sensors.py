@@ -26,6 +26,7 @@ def add_mess(df):
     # TODO 1: spikes
     spike_rows = rng.choice(df.index, size=int(len(df) * 0.01), replace=False)
     df.loc[spike_rows, "temperature"] += 15
+    df.loc[spike_rows, ["sensor_id", "reading_time"]].to_csv("spike_truth.csv", index=False)
 
     # TODO 2: duplicate about 2% of the rows
     dupes = df.sample(frac=0.02, random_state=42)
