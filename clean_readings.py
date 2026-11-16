@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 def load_raw(path="raw_readings.csv"):
@@ -28,6 +29,29 @@ def handle_missing(df):
     )
     return df
 
+def flag_spikes(df, window=12, z_threshold=3.0, mad_threshold=3.5):
+    df = df.sort_values(["sensor_id", "reading_time"]).reset_index(drop=True)
+    grouped = df.groupby("sensor_id")["temperature"]
+
+    # Method 1: z-score against the previous readings (your shift(1) idea)
+    def zscore(s):
+        r = s.rolling(window, min_periods=3)
+        m = r.mean().shift(1)
+        sd = r.std(ddof=0).shift(1)
+        return (s - m) / sd
+
+    df["z"] = grouped.transform(zscore)
+    df["is_spike_z"] = df["z"].abs() > z_threshold
+
+    # Method 2: rolling median and MAD (centred window)
+    def robust_z(s):
+        med = s.rolling(window, center=True, min_periods=3).median()
+        mad = (s - med).abs().rolling(window, center=True, min_periods=3).median()
+        return 0.6745 * (s - med) / mad
+
+    df["robust_z"] = grouped.transform(robust_z)
+    df["is_spike_mad"] = df["robust_z"].abs() > mad_threshold
+    return df
 
 if __name__ == "__main__":
     df = load_raw()
@@ -44,3 +68,16 @@ if __name__ == "__main__":
     print("imputed rows:", df["temperature_imputed"].sum())
 
     print(df.head())
+
+    df = flag_spikes(df)
+    print("z-score spikes:", df["is_spike_z"].sum())
+    print("MAD spikes:", df["is_spike_mad"].sum())
+    both = df["is_spike_z"] & df["is_spike_mad"]
+    print("flagged by both:", both.sum())
+    print("only z-score:", (df["is_spike_z"] & ~df["is_spike_mad"]).sum())
+    print("only MAD:", (~df["is_spike_z"] & df["is_spike_mad"]).sum())
+
+    flagged = df[df["is_spike_z"] | df["is_spike_mad"]]
+    print(flagged[["sensor_id", "reading_time", "temperature", "z", "robust_z"]]
+          .sort_values("robust_z", key=abs, ascending=False)
+          .to_string())
