@@ -29,7 +29,7 @@ def handle_missing(df):
     )
     return df
 
-def flag_spikes(df, window=12, z_threshold=3.0, mad_threshold=3.5):
+def flag_spikes(df, window=12, z_threshold=4.0, mad_threshold=5.0):
     df = df.sort_values(["sensor_id", "reading_time"]).reset_index(drop=True)
     grouped = df.groupby("sensor_id")["temperature"]
 
@@ -45,7 +45,7 @@ def flag_spikes(df, window=12, z_threshold=3.0, mad_threshold=3.5):
 
     # Method 2: rolling median and MAD (centred window)
     def robust_z(s):
-        med = s.rolling(window, center=True, min_periods=3).median()
+        med = s.rolling(window, center=True, min_periods=6).median()
         mad = (s - med).abs().rolling(window, center=True, min_periods=3).median()
         return 0.6745 * (s - med) / mad
 
