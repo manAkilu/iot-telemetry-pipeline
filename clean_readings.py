@@ -29,11 +29,12 @@ def handle_missing(df):
     )
     return df
 
+
 def flag_spikes(df, window=12, z_threshold=4.0, mad_threshold=5.0):
     df = df.sort_values(["sensor_id", "reading_time"]).reset_index(drop=True)
     grouped = df.groupby("sensor_id")["temperature"]
 
-    # Method 1: z-score against the previous readings (your shift(1) idea)
+    # Method 1: z-score against the previous readings only (shift(1) keeps the current row out of its own window)
     def zscore(s):
         r = s.rolling(window, min_periods=3)
         m = r.mean().shift(1)
@@ -52,6 +53,7 @@ def flag_spikes(df, window=12, z_threshold=4.0, mad_threshold=5.0):
     df["robust_z"] = grouped.transform(robust_z)
     df["is_spike_mad"] = df["robust_z"].abs() > mad_threshold
     return df
+
 
 if __name__ == "__main__":
     df = load_raw()
