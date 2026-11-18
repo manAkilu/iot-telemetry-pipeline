@@ -4,3 +4,4 @@ __pycache__/
 .env
 raw_readings.csv
 .vscode
+spike_truth.csv
