@@ -55,6 +55,23 @@ def flag_spikes(df, window=12, z_threshold=4.0, mad_threshold=5.0):
     return df
 
 
+def handle_spikes(df):
+    # 1. Keep the original reading
+    df["temperature_before_spike_fix"] = df["temperature"]
+
+    # 2. A spike is a row that both detectors flagged
+    df["is_spike"] = df["is_spike_z"] & df["is_spike_mad"]
+
+    # 3. Blank out the spikes
+    df.loc[df["is_spike"], "temperature"] = np.nan
+
+    # 4. Fill them in again with linear interpolation, per sensor
+    df["temperature"] = df.groupby("sensor_id")["temperature"].transform(
+        lambda s: s.interpolate(method="linear", limit_direction="both")
+    )
+    return df
+
+
 if __name__ == "__main__":
     df = load_raw()
     print("raw rows:", len(df))
@@ -83,3 +100,8 @@ if __name__ == "__main__":
     print(flagged[["sensor_id", "reading_time", "temperature", "z", "robust_z"]]
           .sort_values("robust_z", key=abs, ascending=False)
           .to_string())
+
+    df = handle_spikes(df)
+    print("spikes replaced:", df["is_spike"].sum())
+    print("max temperature before:", df["temperature_before_spike_fix"].max())
+    print("max temperature after:", df["temperature"].max())

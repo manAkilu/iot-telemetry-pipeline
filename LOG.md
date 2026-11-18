@@ -89,7 +89,12 @@ Limits:
 
 ## Next
 - Commit this work (clean_readings.py, evaluate_spikes.py, simulate_sensors.py, LOG.md)
-- Handle the flagged spikes: keep temperature_raw, set is_spike, interpolate the flagged values
+- Handle the flagged spikes: keep temperature_before_spike_fix, set is_spike, interpolate the flagged values
 - Find the missing timestamps with a full 5-minute grid per sensor
 - Docker basics and a compose file (week 3)
 - Databricks Academy course and the bronze layer (week 4)
+
+## 18 Nov
+- Added handle_spikes: keeps the previous reading in temperature_before_spike_fix, flags a spike where both detectors agree, blanks those readings and interpolates them per sensor
+- Seed 42: 5 spikes replaced, maximum temperature fell from 43.1 to 42.9, because the 3 spikes the z-score misses are left in
+- Committed the evaluation work and stopped tracking generated files (spike_truth.csv, raw_readings.csv)
