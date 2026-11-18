@@ -98,3 +98,12 @@ Limits:
 - Added handle_spikes: keeps the previous reading in temperature_before_spike_fix, flags a spike where both detectors agree, blanks those readings and interpolates them per sensor
 - Seed 42: 5 spikes replaced, maximum temperature fell from 43.1 to 42.9, because the 3 spikes the z-score misses are left in
 - Committed the evaluation work and stopped tracking generated files (spike_truth.csv, raw_readings.csv)
+- Added find_missing_timestamps: builds the full 5-minute grid per sensor and compares it with the readings that exist
+- Result on seed 42: 24 readings never arrived (A 12, B 4, C 8). 840 rows + 24 missing = 864, which is 3 sensors x 288 readings
+- Decision: the gaps are reported, not filled, because filling them would invent readings that never existed. Short gaps could be interpolated later and flagged
+
+## Next
+- Compile a study guide from the work so far
+- Docker basics and a compose file (week 3)
+- Databricks Academy course and the bronze layer (week 4)
+- Write the cleaned data to a file and load it as the bronze and silver layers

@@ -72,6 +72,25 @@ def handle_spikes(df):
     return df
 
 
+def find_missing_timestamps(df):
+    # 1. Every 5-minute step from the first to the last reading
+    grid = pd.date_range(
+        df["reading_time"].min(), df["reading_time"].max(), freq="5min"
+    )
+
+    # 2. Every sensor at every step (what we expect to have)
+    expected = pd.MultiIndex.from_product(
+        [df["sensor_id"].unique(), grid], names=["sensor_id", "reading_time"]
+    )
+
+    # 3. The sensor/time pairs we actually have
+    actual = pd.MultiIndex.from_frame(df[["sensor_id", "reading_time"]])
+
+    # 4. Expected but not actual = missing
+    missing = expected.difference(actual)
+    return missing.to_frame(index=False)
+    
+
 if __name__ == "__main__":
     df = load_raw()
     print("raw rows:", len(df))
@@ -105,3 +124,8 @@ if __name__ == "__main__":
     print("spikes replaced:", df["is_spike"].sum())
     print("max temperature before:", df["temperature_before_spike_fix"].max())
     print("max temperature after:", df["temperature"].max())
+
+    missing = find_missing_timestamps(df)
+    print("missing timestamps:", len(missing))
+    print(missing.groupby("sensor_id").size())
+    print(missing.head())
