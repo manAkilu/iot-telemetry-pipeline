@@ -35,11 +35,12 @@ python evaluate_spikes.py
 ### Run it with Docker
 
 ```
+mkdir output
 docker build -t iot-pipeline .
-docker run --rm iot-pipeline
+docker run --rm -v "$(pwd)/output:/output" iot-pipeline
 ```
 
-This runs the simulator, the cleaning script and the evaluation in one container and prints the results. The files it creates stay inside the container.
+This runs the simulator, the cleaning script and the evaluation in one container and prints the results. The `-v` part shares the `output` folder with the container, so the CSV files it creates (raw, clean, missing timestamps and the spike answer key) appear on your computer.
 
 ## Files
 

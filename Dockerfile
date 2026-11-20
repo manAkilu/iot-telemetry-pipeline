@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY simulate_sensors.py clean_readings.py evaluate_spikes.py ./
 
-CMD ["sh", "-c", "python simulate_sensors.py && python clean_readings.py && python evaluate_spikes.py"]
+RUN mkdir -p /output
+
+CMD ["sh", "-c", "cd /output && python /app/simulate_sensors.py && python /app/clean_readings.py && python /app/evaluate_spikes.py"]

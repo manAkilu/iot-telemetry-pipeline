@@ -97,3 +97,5 @@ Limits:
 - Installed Docker Desktop and checked it with hello-world
 - Wrote requirements.txt, .dockerignore and a Dockerfile
 - Built the image and ran the whole pipeline in a container. The output matched my Mac run exactly (840 rows, 5 spikes replaced, 24 missing timestamps, same precision and recall)
+- Added a shared folder (volume) so the container writes its CSV files to output/ on my Mac. Changed the Dockerfile to run the scripts from /output
+- Confirmed that the four CSV files appear in output/

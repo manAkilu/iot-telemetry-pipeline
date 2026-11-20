@@ -7,3 +7,4 @@ raw_readings.csv
 spike_truth.csv
 clean_readings.csv
 missing_timestamps.csv
+output/
