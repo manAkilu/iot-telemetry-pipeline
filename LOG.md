@@ -1,14 +1,11 @@
 # Progress Log
 
-# Progress Log
-
 Study log for my 12-week data engineering plan. Project: IoT telemetry pipeline.
 
 ## 8 Nov (Day 1)
 - Installed and checked Python 3.13, Git and VS Code
 - Created the GitHub repo with README and .gitignore
 - Set up Git name and email
-- Next: SQL practice sites and Databricks
 
 ## 9 to 10 Nov
 - Finished the Intro to SQL tutorial
@@ -36,17 +33,6 @@ Study log for my 12-week data engineering plan. Project: IoT telemetry pipeline.
 - Added raw_readings.csv and .vscode to .gitignore
 - Started clean_readings.py (duplicates and sorting)
 
-## Lessons learned
-- Python code goes in the editor and runs with `python file.py`. The terminal is for commands.
-- Assign results back (`df = df.drop(...)`), or the change is lost.
-- A condition in a left join's ON clause and one in WHERE give different results.
-- `.gitignore` does not stop tracking files already committed. Use `git rm -r --cached <path>`.
-
-## Next
-- Finish clean_readings.py: missing values, spike detection (z-score and median/MAD), missing timestamps
-- Docker basics and a compose file (week 3)
-- Databricks Academy course and the bronze layer (week 4)
-
 ## 16 Nov
 - Finished the cleaning steps in clean_readings.py: kept the best duplicate (sorted so a real value comes before NaN), interpolated the 16 missing temperatures per sensor and flagged them in temperature_imputed
 - Wrote spike detection: rolling z-score (against the previous readings) and rolling median with MAD
@@ -56,6 +42,21 @@ Study log for my 12-week data engineering plan. Project: IoT telemetry pipeline.
 ## 17 Nov
 - Tested the detectors on three more seeds (7, 1 and 2) without changing any thresholds
 - Set the seed back to 42 and checked that the original results are reproduced
+
+## 18 Nov
+- Added handle_spikes: keeps the previous reading in temperature_before_spike_fix, flags a spike where both detectors agree, blanks those readings and interpolates them per sensor
+- Seed 42: 5 spikes replaced, maximum temperature fell from 43.1 to 42.9, because the 3 spikes the z-score misses are left in
+- Committed the evaluation work and stopped tracking generated files (spike_truth.csv, raw_readings.csv)
+- Added find_missing_timestamps: builds the full 5-minute grid per sensor and compares it with the readings that exist
+- Result on seed 42: 24 readings never arrived (A 12, B 4, C 8). 840 rows + 24 missing = 864, which is 3 sensors x 288 readings
+- Decision: the gaps are reported, not filled, because filling them would invent readings that never existed. Short gaps could be interpolated later and flagged
+- Added save_outputs: the cleaned data goes to clean_readings.csv (840 rows) and the gaps to missing_timestamps.csv (24 rows)
+- Rewrote the README with the results, limits and run instructions
+
+## 20 Nov
+- Pushed the cleaned-data and README commit to GitHub and checked the repo page
+- Tidied this log
+- Stage 1 of the project (raw data to clean data) is finished
 
 ## Spike detection results
 
@@ -80,32 +81,20 @@ Limits:
 - Every spike is a large +15 degrees. Real faults are subtler, so these scores are probably optimistic.
 - I tuned the thresholds on seed 42, then tested on three other seeds.
 
-## Lessons learned (additions)
+## Lessons learned
+- Save the file before running it. Most "it did not work" moments were unsaved files.
+- Python code goes in the editor and runs with `python file.py`. The terminal is for commands.
+- Assign results back (`df = df.drop(...)`), or the change is lost.
+- A condition in a left join's ON clause and one in WHERE give different results.
+- `.gitignore` does not stop tracking files already committed. Use `git rm --cached <path>`.
 - Deduplicate on the business key (sensor and time), and decide which duplicate to keep.
+- Flag values before filling them, so I always know which ones are real.
 - A trailing window that includes an earlier outlier can hide the next one. Median and MAD resist this.
 - Tune on one dataset and test on others before trusting a result.
-- Change one parameter at a time, or you cannot tell which change helped.
-- A file already tracked by Git stays tracked after it is added to .gitignore. Use `git rm --cached`.
+- Change one parameter at a time, or I cannot tell which change helped.
 
 ## Next
-- Commit this work (clean_readings.py, evaluate_spikes.py, simulate_sensors.py, LOG.md)
-- Handle the flagged spikes: keep temperature_before_spike_fix, set is_spike, interpolate the flagged values
-- Find the missing timestamps with a full 5-minute grid per sensor
-- Docker basics and a compose file (week 3)
-- Databricks Academy course and the bronze layer (week 4)
-
-## 18 Nov
-- Added handle_spikes: keeps the previous reading in temperature_before_spike_fix, flags a spike where both detectors agree, blanks those readings and interpolates them per sensor
-- Seed 42: 5 spikes replaced, maximum temperature fell from 43.1 to 42.9, because the 3 spikes the z-score misses are left in
-- Committed the evaluation work and stopped tracking generated files (spike_truth.csv, raw_readings.csv)
-- Added find_missing_timestamps: builds the full 5-minute grid per sensor and compares it with the readings that exist
-- Result on seed 42: 24 readings never arrived (A 12, B 4, C 8). 840 rows + 24 missing = 864, which is 3 sensors x 288 readings
-- Decision: the gaps are reported, not filled, because filling them would invent readings that never existed. Short gaps could be interpolated later and flagged
-- Added save_outputs: the cleaned data goes to clean_readings.csv (840 rows) and the gaps to missing_timestamps.csv (24 rows)
-- Rewrote the README with the results, limits and run instructions
-
-## Next
-- Compile a study guide from the work so far
-- Docker basics and a compose file (week 3)
-- Databricks Academy course and the bronze layer (week 4)
-- Write the cleaned data to a file and load it as the bronze and silver layers
+- Docker basics: run the simulator and cleaning script in a container (week 3)
+- Databricks Academy course, then load the data as bronze, silver and gold tables (week 4)
+- A couple of DataLemur SQL problems each day
+- Update my study guide as each new stage is finished
