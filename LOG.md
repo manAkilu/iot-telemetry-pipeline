@@ -101,6 +101,8 @@ Limits:
 - Added find_missing_timestamps: builds the full 5-minute grid per sensor and compares it with the readings that exist
 - Result on seed 42: 24 readings never arrived (A 12, B 4, C 8). 840 rows + 24 missing = 864, which is 3 sensors x 288 readings
 - Decision: the gaps are reported, not filled, because filling them would invent readings that never existed. Short gaps could be interpolated later and flagged
+- Added save_outputs: the cleaned data goes to clean_readings.csv (840 rows) and the gaps to missing_timestamps.csv (24 rows)
+- Rewrote the README with the results, limits and run instructions
 
 ## Next
 - Compile a study guide from the work so far

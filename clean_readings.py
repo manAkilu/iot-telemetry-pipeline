@@ -89,6 +89,15 @@ def find_missing_timestamps(df):
     # 4. Expected but not actual = missing
     missing = expected.difference(actual)
     return missing.to_frame(index=False)
+
+
+def save_outputs(df, missing):
+    columns = [
+        'sensor_id', 'reading_time', 'temperature',
+        'temperature_imputed', 'is_spike', 'temperature_before_spike_fix',
+    ]
+    df[columns].to_csv('clean_readings.csv', index=False)
+    missing.to_csv('missing_timestamps.csv', index=False)
     
 
 if __name__ == "__main__":
@@ -129,3 +138,6 @@ if __name__ == "__main__":
     print("missing timestamps:", len(missing))
     print(missing.groupby("sensor_id").size())
     print(missing.head())
+
+    save_outputs(df, missing)
+    print('saved clean_readings.csv and missing_timestamps.csv')

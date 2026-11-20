@@ -5,3 +5,5 @@ __pycache__/
 raw_readings.csv
 .vscode
 spike_truth.csv
+clean_readings.csv
+missing_timestamps.csv
