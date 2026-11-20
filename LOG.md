@@ -93,8 +93,7 @@ Limits:
 - Tune on one dataset and test on others before trusting a result.
 - Change one parameter at a time, or I cannot tell which change helped.
 
-## Next
-- Docker basics: run the simulator and cleaning script in a container (week 3)
-- Databricks Academy course, then load the data as bronze, silver and gold tables (week 4)
-- A couple of DataLemur SQL problems each day
-- Update my study guide as each new stage is finished
+## 20 Nov
+- Installed Docker Desktop and checked it with hello-world
+- Wrote requirements.txt, .dockerignore and a Dockerfile
+- Built the image and ran the whole pipeline in a container. The output matched my Mac run exactly (840 rows, 5 spikes replaced, 24 missing timestamps, same precision and recall)

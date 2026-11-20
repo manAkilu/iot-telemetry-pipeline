@@ -32,6 +32,14 @@ python simulate_sensors.py
 python clean_readings.py
 python evaluate_spikes.py
 ```
+### Run it with Docker
+
+```
+docker build -t iot-pipeline .
+docker run --rm iot-pipeline
+```
+
+This runs the simulator, the cleaning script and the evaluation in one container and prints the results. The files it creates stay inside the container.
 
 ## Files
 
@@ -39,7 +47,10 @@ python evaluate_spikes.py
 - `clean_readings.py` cleans the data and writes `clean_readings.csv` and `missing_timestamps.csv`
 - `evaluate_spikes.py` scores the spike detection
 - `LOG.md` is my study log with decisions and lessons
+- `Dockerfile` builds the image that runs the three scripts
+- `requirements.txt` lists the Python libraries (pandas and numpy)
+- `.dockerignore` keeps local files out of the image
 
 ## Status
 
-Stage 1 (raw data to clean data) is finished. Next: Docker, then bronze, silver and gold tables on Databricks, then dbt, Dagster and automated tests.
+Stage 1 (raw data to clean data) is finished. Next: Databricks bronze, silver and gold tables, then dbt, Dagster and automated tests.

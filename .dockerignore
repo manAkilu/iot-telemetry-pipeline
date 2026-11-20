@@ -1,0 +1,10 @@
+.venv
+__pycache__
+.git
+.vscode
+.DS_Store
+.env
+raw_readings.csv
+clean_readings.csv
+missing_timestamps.csv
+spike_truth.csv
